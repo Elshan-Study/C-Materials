@@ -913,3 +913,55 @@ File.ReadAllText("books.json")
 JsonSerializer.Deserialize\<List\<Book>>(text);
 
 можно передавать сырую строку
+
+___
+
+//Binary
+
+BinaryWriter and BinaryReader
+
+\[JsonIgnore] - для запрета сериализации
+\[JsonNameProperty] - для переименования параметров
+
+MemoryStream() - для временной записи в буфер. Создает поток, резервный хранилище которого является памятью.
+
+MemoryStream.WriteTo() - запись из мемори в стрим
+
+//record
+
+для сравнения по значениям, можно записывать в одну строчку, можно наследовать только от рекордов, через with можно создать рекорд с измененным параметром
+
+___
+//LINQ - lanquage integrated queries
+
+использует extension methods
+
+```csharp
+
+static class Test
+{
+	public static string Capitalize(this string source)
+}
+```
+
+ключевое слово для создания экстеншена, дальше можно передавать обычные параметры
+
+в классе может быть много методов, но они должны быть статичными
+
+ на самом деле выглядит как
+ var cap = Test.Capitalize(cap);
+
+Select
+Where -  пробегается по всем элементам коллекции, отсеивает тех, кто не соответствует условию. Первый раз ничего не даст, потому что ждет второго вызова через фор ич
+Min
+Max
+First - IEnumerable, возвращает первое совпадение
+FirstOrDefault - если не нашел, то  вернет значение по умолчанию
+Lart - IEnumerable, возвращает последнее совпадение
+Skip - пропустить сколько-то
+Take - взять сколько-то
+SkipWhile - пока соответствует условиям или через
+
+yield - позволяет сохранять состояние и вызывать разный return. А yield break обрывает вызовы этапов yield. Под капотом private bool MoveNext(). 
+
+ 
