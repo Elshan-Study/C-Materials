@@ -124,7 +124,7 @@ int[][] [] jagged = new int[3][]
 or
 jagged[0] = new int[3]
 
-jagged[i][j]
+jagged\[i]\[j]
 
 Length вернет 3ку
 
@@ -1057,3 +1057,54 @@ ___
 - `DateTime.Now` – текущая дата и время.
 - `now.AddYears(-age)` – дата на N лет назад.
 - `d.BirthDay.Month` – месяц рождения.
+
+___
+
+// Анонимный класс
+ создает объект, у которого нет типа
+
+var = new
+{
+	Value = 42,
+	Data = "Hello"
+}
+
+мы не сможем по функции к ним обратиться без рефлексии
+
+```csharp
+void Foo(object obj)
+{
+	var type = obj.GetType();
+	var value = type.GetProperty("Value");
+}
+```
+
+//dynamic
+позволяет менять тип в рантайме
+
+!Если Min и Max использовать с объектами нужен интерфейс IComparable
+
+___
+//Reflection
+
+класс Type
+
+var type = game.GetType() //узнает в рантайме
+typeof(Object) //если знаем тип
+type.GetField("field") //получить значение поля
+
+флаги Instance - nonstatic
+NonPublic - 
+
+GetModifiedFieldType - type of field
+
+field.SetValue(game, 99) - //установить значение game как this
+
+\[AttributeUsage(AttributeTargets.Property)] 
+
+PropertyInfo - выводит название и другую инфу свойства
+___
+//dll
+manifest - информация в dll которая овтечает за версию и связки
+metadata - таблица для рефлексилии
+il code
