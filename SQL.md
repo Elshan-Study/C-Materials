@@ -122,3 +122,147 @@ DATEDIFF(year, \[Дата рождения], GETDATE())
 
 `LOWER(expression)`
 - Преобразует строку в **строчные буквы**.
+
+___
+/// Relations
+```sql
+CREATE TABLE DepartmentsHeads (  
+    HeadID INT IDENTITY(1,1) PRIMARY KEY,  
+    FullName NVARCHAR(100) NOT NULL,  
+    Email NVARCHAR(100),  
+    Phone NVARCHAR(20)  
+);  
+  
+CREATE TABLE Departments (  
+    DepartmentID INT IDENTITY(1,1) PRIMARY KEY,  
+    Name NVARCHAR(100) NOT NULL UNIQUE,  
+    Description NVARCHAR(MAX),  
+    HeadID INT,  
+    FOREIGN KEY (HeadID) REFERENCES DepartmentsHeads(HeadID)  
+);  
+  
+CREATE TABLE Teachers (  
+    TeacherID INT IDENTITY(1,1) PRIMARY KEY,  
+    FullName NVARCHAR(100) NOT NULL,  
+    Email NVARCHAR(100),  
+    Phone NVARCHAR(20)  
+);  
+  
+CREATE TABLE Groups (  
+    GroupID INT IDENTITY(1,1) PRIMARY KEY,  
+    Name NVARCHAR(50) NOT NULL UNIQUE,  
+    Description NVARCHAR(MAX),  
+    DepartmentID INT,  
+    TeacherID INT,  
+    FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID),  
+    FOREIGN KEY (TeacherID) REFERENCES Teachers(TeacherID)  
+);  
+  
+CREATE TABLE Students (  
+    StudentID INT IDENTITY(1,1) PRIMARY KEY,  
+    FullName NVARCHAR(100) NOT NULL,  
+    Email NVARCHAR(100),  
+    GroupID INT,  
+    FOREIGN KEY (GroupID) REFERENCES Groups(GroupID)  
+);  
+  
+INSERT INTO DepartmentsHeads (FullName, Email, Phone) VALUES  
+(N'Иванов Иван Иванович', 'ivanov@university.edu', '1234567890'),  
+(N'Петров Петр Петрович', 'petrov@university.edu', '0987654321');  
+  
+INSERT INTO Departments (Name, Description, HeadID) VALUES  
+(N'Математика', N'Кафедра математики и статистики', 1),  
+(N'Физика', N'Кафедра общей и теоретической физики', 2);  
+  
+INSERT INTO Teachers (FullName, Email, Phone) VALUES  
+(N'Смирнова Анна Сергеевна', 'smirnova@university.edu', '111222333'),  
+(N'Кузнецов Алексей Викторович', 'kuznetsov@university.edu', '444555666');  
+  
+INSERT INTO Groups (Name, Description, DepartmentID, TeacherID) VALUES  
+(N'Группа М101', N'1 курс, математика', 1, 1),  
+(N'Группа М102', N'1 курс, математика', 1, 2),  
+(N'Группа Ф101', N'1 курс, физика', 2, 2);  
+  
+INSERT INTO Students (FullName, Email, GroupID) VALUES  
+(N'Александров Дмитрий', 'alexandrov@university.edu', 1),  
+(N'Борисова Мария', 'borisova@university.edu', 1),  
+(N'Волков Николай', 'volkov@university.edu', 2),  
+(N'Григорьева Елена', 'grigorieva@university.edu', 3);  
+  
+SELECT s.*  
+FROM Students s  
+JOIN Groups g ON s.GroupID = g.GroupID  
+WHERE g.Name = N'Группа М101';  
+  
+SELECT g.*  
+FROM Groups g  
+JOIN Students s ON g.GroupID = s.GroupID  
+WHERE s.FullName = N'Борисова Мария';  
+  
+SELECT g.*  
+FROM Groups g  
+JOIN Teachers t ON g.TeacherID = t.TeacherID  
+WHERE t.FullName = N'Кузнецов Алексей Викторович';  
+  
+SELECT g.*  
+FROM Groups g  
+JOIN Departments d ON g.DepartmentID = d.DepartmentID  
+JOIN DepartmentsHeads h ON d.HeadID = h.HeadID  
+WHERE h.FullName = N'Петров Петр Петрович';  
+  
+SELECT s.*  
+FROM Students s  
+JOIN Groups g ON s.GroupID = g.GroupID  
+JOIN Departments d ON g.DepartmentID = d.DepartmentID  
+JOIN DepartmentsHeads h ON d.HeadID = h.HeadID  
+WHERE h.FullName = N'Иванов Иван Иванович';  
+  
+SELECT g.GroupID  
+FROM Groups g  
+JOIN Departments d ON g.DepartmentID = d.DepartmentID  
+WHERE d.Name = N'Математика';
+```
+
+____
+///  Агрегатные функции
+
+Предложение `GROUP BY` в SQL используется для ==группировки строк в таблице по значениям одного или нескольких столбцов==. Оно часто применяется в сочетании с агрегатными функциями, такими как `COUNT`, `SUM`, `AVG`, `MAX` или `MIN`, для выполнения вычислений над сгруппированными данными.
+
+Предложение `HAVING` в SQL используется для фильтрации результатов группировки, полученных с помощью `GROUP BY`. Оно позволяет применять условия к сгруппированным данным, в отличие от `WHERE`, которое применяется к отдельным строкам до группировки. Таким образом, `HAVING` используется для отбора определенных групп на основе агрегатных функций, таких как `SUM`, `COUNT`, `AVG`, `MIN`, `MAX`, в то время как `WHERE` не может напрямую работать с этими функциями.
+
+```sql
+-- COUNT, COUNT_BIG
+
+-- SELECT COUNT(*) AS Count, P.SupplierID
+-- FROM Products AS P
+-- GROUP BY P.SupplierID
+-- HAVING COUNT(*) > 3
+
+-- MIN/MAX
+
+-- SELECT MAX(OD.Quantity) AS MaxQuantity, OD.ProductID
+-- FROM [Order Details] AS OD
+-- GROUP BY OD.ProductID
+
+-- SUM/AVG
+
+-- SELECT SUM(P.UnitPrice), P.CategoryID
+-- FROM Products AS P
+-- GROUP BY P.CategoryID
+
+
+SELECT R.Count, S.CompanyName
+FROM (SELECT COUNT(*) AS Count, P.SupplierID
+      FROM Products AS P
+      GROUP BY P.SupplierID
+      HAVING COUNT(*) > 3) AS R
+JOIN Suppliers AS S ON S.SupplierID = R.SupplierID
+
+
+SELECT *
+FROM (SELECT COUNT(*) AS Count, P.SupplierID
+      FROM Products AS P
+      GROUP BY P.SupplierID) AS R
+WHERE R.Count > 3
+```
+
